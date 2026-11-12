@@ -1,6 +1,9 @@
 # JOI Tools
 
-情報オリンピック (JOI) の練習・考察用のブラウザアプリです。インストール不要の静的 Web アプリ（HTML / CSS / JavaScript のみ）で、データはすべてブラウザに自動保存されます。
+情報オリンピック (JOI) の練習・考察用のブラウザアプリです。
+
+**▶ すぐ使う: <https://aiueokakikukeko314.github.io/JOI-tools/>**
+インストール不要の静的 Web アプリ（HTML / CSS / JavaScript のみ）で、データはすべてブラウザに自動保存されます。
 
 ## 機能
 

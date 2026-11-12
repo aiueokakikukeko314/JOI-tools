@@ -68,7 +68,8 @@ const Runner = {
   pyMsgId: 0,
 
   async detectLocal() {
-    if (location.protocol === 'file:') return null;
+    // file:// や GitHub Pages では server.py は動いていない
+    if (location.protocol === 'file:' || location.hostname.endsWith('github.io')) return null;
     try {
       const r = await fetch('api/ping', { cache: 'no-store', headers: { 'X-JOI-Tools': '1' } });
       if (!r.ok) return null;
