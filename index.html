@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JOI Tools</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">JOI Tools</div>
+  <nav class="tabs" role="tablist">
+    <button class="tab" data-tab="code" title="Alt+1">コードテスト</button>
+    <button class="tab" data-tab="memo" title="Alt+2">メモ</button>
+    <button class="tab" data-tab="table" title="Alt+3">表</button>
+    <button class="tab" data-tab="algo" title="Alt+4">手順</button>
+    <button class="tab" data-tab="tmpl" title="Alt+5">入力テンプレ</button>
+  </nav>
+  <div class="top-actions">
+    <label class="inline">右に並べる
+      <select id="splitSel" title="2つのツールを横に並べて表示">
+        <option value="">なし</option>
+        <option value="code">コードテスト</option>
+        <option value="memo">メモ</option>
+        <option value="table">表</option>
+        <option value="algo">手順</option>
+        <option value="tmpl">入力テンプレ</option>
+      </select>
+    </label>
+    <button id="themeBtn" class="icon-btn" title="ライト/ダーク切り替え">◐</button>
+    <button id="helpBtn" class="icon-btn" title="使い方">?</button>
+  </div>
+</header>
+
+<main id="main">
+  <!-- ===================== コードテスト ===================== -->
+  <section class="panel" data-panel="code">
+    <div class="code-layout" id="codeLayout">
+      <div class="code-left">
+        <div class="toolbar">
+          <select id="langSel" title="言語">
+            <option value="cpp">C++</option>
+            <option value="python">Python</option>
+          </select>
+          <select id="stdSel" title="C++ の規格">
+            <option value="gnu++17">C++17</option>
+            <option value="gnu++20">C++20</option>
+          </select>
+          <select id="backendSel" title="実行環境">
+            <option value="auto">実行環境: 自動</option>
+            <option value="local">ローカル (server.py)</option>
+            <option value="wandbox">Wandbox (オンライン)</option>
+            <option value="pyodide">ブラウザ内 Python</option>
+          </select>
+          <label class="inline" title="時間制限 (秒)">TL
+            <input id="tlInput" type="number" min="0.5" max="20" step="0.5" value="2" class="num">秒
+          </label>
+          <span class="spacer"></span>
+          <button id="fontDec" title="文字を小さく">A−</button>
+          <button id="fontInc" title="文字を大きく">A+</button>
+          <button id="skeletonBtn" title="基本ひな形でコードを置き換え">ひな形</button>
+          <button id="runAllBtn" class="primary" title="Ctrl+Enter">▶ 全ケース実行</button>
+        </div>
+        <div id="editorHost" class="editor-host"></div>
+        <div class="statusline"><span id="backendStatus">実行環境を確認中…</span><span class="spacer"></span><span id="cursorPos"></span></div>
+      </div>
+      <div class="splitter" id="codeSplitter" title="ドラッグで幅を変更"></div>
+      <div class="code-right">
+        <div class="toolbar">
+          <strong>テストケース</strong>
+          <span id="caseSummary" class="summary"></span>
+          <span class="spacer"></span>
+          <label class="inline" title="実数の出力を 1e-6 の誤差まで許容"><input type="checkbox" id="floatTol"> 誤差許容</label>
+          <button id="addCaseBtn">+ 追加</button>
+          <button id="pasteSampleBtn" title="問題文の「入力例 / 出力例」をまとめて貼り付け">サンプル貼り付け</button>
+          <button id="clearCasesBtn">全削除</button>
+        </div>
+        <div id="compileMsg" class="compile-msg" hidden></div>
+        <div id="caseList" class="case-list"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== メモ ===================== -->
+  <section class="panel" data-panel="memo">
+    <div class="toolbar">
+      <select id="memoPageSel" title="ページ"></select>
+      <button id="memoAddPage">+ ページ</button>
+      <button id="memoRenamePage">名前変更</button>
+      <button id="memoDelPage">削除</button>
+      <span class="sep"></span>
+      <div class="seg" id="memoView">
+        <button data-view="both">両方</button>
+        <button data-view="text">テキスト</button>
+        <button data-view="draw">手書き</button>
+      </div>
+    </div>
+    <div class="memo-layout" id="memoLayout">
+      <div class="memo-text">
+        <textarea id="memoText" spellcheck="false" placeholder="考察メモ（自動保存）&#10;&#10;例:&#10;- N ≤ 2×10^5 → O(N log N) まで&#10;- 部分点 1: N ≤ 100 は全探索&#10;- 嘘解法かも？ → 反例を探す"></textarea>
+      </div>
+      <div class="memo-draw">
+        <div class="toolbar draw-tools" id="drawTools">
+          <div class="seg" id="toolSeg">
+            <button data-tool="pen" title="ペン (P)">✎ ペン</button>
+            <button data-tool="eraser" title="消しゴム (E)">⌫ 消し</button>
+            <button data-tool="line" title="直線 (L) ノード間はスナップ">／ 線</button>
+            <button data-tool="arrow" title="矢印 (A) ノード間はスナップ">→ 矢印</button>
+            <button data-tool="rect" title="四角 (R)">□</button>
+            <button data-tool="ellipse" title="円 (O)">○</button>
+            <button data-tool="node" title="番号付きノード (N) グラフ・木を描く">◉ ノード</button>
+            <button data-tool="text" title="文字 (T)">A 文字</button>
+          </div>
+          <label class="inline" title="次に置くノードの番号">No.<input id="nodeNext" type="number" class="num" value="1"></label>
+          <div class="colors" id="colorRow"></div>
+          <label class="inline" title="太さ">太さ<input id="penWidth" type="range" min="1" max="16" value="3"></label>
+          <span class="spacer"></span>
+          <button id="drawUndo" title="元に戻す (Ctrl+Z)">↶</button>
+          <button id="drawRedo" title="やり直し (Ctrl+Y)">↷</button>
+          <button id="drawGrid" title="方眼の表示切替">方眼</button>
+          <button id="drawClear">全消去</button>
+          <button id="drawSave" title="PNG で保存">PNG</button>
+        </div>
+        <div class="canvas-wrap" id="canvasWrap">
+          <canvas id="drawCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 表 ===================== -->
+  <section class="panel" data-panel="table">
+    <div class="toolbar">
+      <select id="tblSel" title="表"></select>
+      <button id="tblNew">+ 新しい表</button>
+      <button id="tblRename">名前変更</button>
+      <button id="tblDelete">削除</button>
+      <span class="sep"></span>
+      <label class="inline">行<input id="tblRows" type="number" class="num" min="1" max="200"></label>
+      <label class="inline">列<input id="tblCols" type="number" class="num" min="1" max="200"></label>
+      <button id="tblResize">サイズ変更</button>
+      <div class="seg" id="tblBase" title="添字の始まり">
+        <button data-base="0">0始まり</button>
+        <button data-base="1">1始まり</button>
+      </div>
+    </div>
+    <div class="toolbar">
+      <span class="muted">選択範囲:</span>
+      <div class="colors" id="tblColors"></div>
+      <button id="tblFill" title="選択範囲を同じ値で埋める">値で埋める</button>
+      <button id="tblClearSel" title="選択範囲の値と色を消す">消去</button>
+      <span class="sep"></span>
+      <button id="tblImport" title="スペース/タブ/カンマ区切りのテキストから作る">テキストから作成</button>
+      <select id="tblExportFmt" title="出力形式">
+        <option value="space">スペース区切り</option>
+        <option value="md">Markdown</option>
+        <option value="csv">CSV</option>
+        <option value="cpp">C++ 配列</option>
+        <option value="py">Python リスト</option>
+      </select>
+      <button id="tblExport">コピー</button>
+    </div>
+    <div class="table-wrap" id="tblWrap"></div>
+    <div class="hint">Enter: 下へ / Tab: 右へ / 矢印キーで移動 / Shift+クリック・ドラッグで範囲選択。DP 表・シミュレーションの書き出しに。</div>
+  </section>
+
+  <!-- ===================== 手順 ===================== -->
+  <section class="panel" data-panel="algo">
+    <div class="algo-layout">
+      <div class="algo-main">
+        <div class="toolbar">
+          <select id="planSel" title="手順メモ"></select>
+          <button id="planNew">+ 新規</button>
+          <button id="planRename">名前変更</button>
+          <button id="planDelete">削除</button>
+          <span class="sep"></span>
+          <select id="algoTplSel" title="よくあるアルゴリズムの手順を追加">
+            <option value="">テンプレから追加…</option>
+          </select>
+          <span class="spacer"></span>
+          <button id="stepsToCode" title="手順をコメントとしてエディタのカーソル位置に挿入">コードにコメント挿入</button>
+          <button id="stepsCopy">テキストでコピー</button>
+        </div>
+        <div id="stepList" class="step-list"></div>
+        <button id="stepAdd" class="add-step">+ 手順を追加</button>
+        <div class="hint">Enter: 次の手順 / Tab・Shift+Tab: 字下げ / Alt+↑↓: 並べ替え / 空のまま Backspace: 削除 / ✓ で実装済みチェック</div>
+      </div>
+      <aside class="algo-side">
+        <h3>計算量チェッカー</h3>
+        <div class="cx-inputs">
+          <label>N = <input id="cxN" value="200000" placeholder="2e5, 10^5 など"></label>
+          <label>制限 <input id="cxTL" type="number" step="0.5" value="2" class="num"> 秒</label>
+        </div>
+        <table class="cx-table" id="cxTable"></table>
+        <p class="hint">目安: C++ で 1 秒あたり約 10<sup>8</sup> 回の単純演算。Python は 10〜50 倍遅いと考える。</p>
+        <h3>制約から逆算</h3>
+        <table class="cx-table ref">
+          <tr><th>N の上限</th><th>許される計算量</th></tr>
+          <tr><td>≤ 10</td><td>O(N!)</td></tr>
+          <tr><td>≤ 20</td><td>O(2<sup>N</sup>), O(N·2<sup>N</sup>)</td></tr>
+          <tr><td>≤ 40</td><td>O(2<sup>N/2</sup>) 半分全列挙</td></tr>
+          <tr><td>≤ 500</td><td>O(N<sup>3</sup>)</td></tr>
+          <tr><td>≤ 5000</td><td>O(N<sup>2</sup>)</td></tr>
+          <tr><td>≤ 2×10<sup>5</sup></td><td>O(N log N), O(N√N)</td></tr>
+          <tr><td>≤ 10<sup>7</sup></td><td>O(N)</td></tr>
+          <tr><td>≤ 10<sup>18</sup></td><td>O(log N), O(√N) は ≤10<sup>12</sup></td></tr>
+        </table>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ===================== 入力テンプレ ===================== -->
+  <section class="panel" data-panel="tmpl">
+    <div class="toolbar">
+      <input id="tmplSearch" type="search" placeholder="検索（例: グリッド, グラフ, クエリ）" class="grow">
+      <div class="seg" id="tmplLang">
+        <button data-lang="cpp">C++</button>
+        <button data-lang="python">Python</button>
+      </div>
+    </div>
+    <div class="tmpl-layout">
+      <nav class="tmpl-cats" id="tmplCats"></nav>
+      <div class="tmpl-list" id="tmplList"></div>
+    </div>
+  </section>
+</main>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<dialog id="dlg" class="dlg">
+  <form method="dialog" class="dlg-inner">
+    <h3 id="dlgTitle"></h3>
+    <p id="dlgDesc" class="muted"></p>
+    <textarea id="dlgText" spellcheck="false"></textarea>
+    <input id="dlgInput" type="text">
+    <div class="dlg-actions">
+      <button value="cancel" id="dlgCancel">キャンセル</button>
+      <button value="alt" id="dlgAlt" hidden></button>
+      <button value="ok" id="dlgOk" class="primary">OK</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="helpDlg" class="dlg">
+  <form method="dialog" class="dlg-inner help">
+    <h3>使い方</h3>
+    <ul>
+      <li><b>コードテスト</b>: C++ / Python を複数のテストケースで実行し、期待出力と比較 (AC / WA / RE / TLE / CE)。<kbd>Ctrl+Enter</kbd> で全実行。「サンプル貼り付け」で問題文の入力例・出力例をまとめて取り込めます。</li>
+      <li><b>実行環境</b>:
+        <ul>
+          <li><b>ローカル</b>: <code>python3 server.py</code> で起動して <code>http://localhost:8000</code> を開くと、手元の g++ / python で実行（オフライン可・時間計測が正確）。</li>
+          <li><b>Wandbox</b>: インターネット経由で C++ / Python を実行（時間は通信込み）。</li>
+          <li><b>ブラウザ内 Python</b>: Pyodide でブラウザ内実行（初回は読み込みに数秒）。</li>
+        </ul>
+      </li>
+      <li><b>メモ</b>: テキストと手書き。ノードツールで番号付きの頂点を置き、線・矢印ツールで頂点どうしを結ぶとグラフや木が描けます。</li>
+      <li><b>表</b>: DP 表などを作成。範囲選択して色付け、各種形式でコピー。</li>
+      <li><b>手順</b>: アルゴリズムの手順を番号付きで整理。コードにコメントとして挿入も可。右側は計算量チェッカー。</li>
+      <li><b>入力テンプレ</b>: よくある入力形式の受け取り方。「エディタに挿入」でカーソル位置に入ります。</li>
+      <li>右上の「右に並べる」で、2つのツールを同時に表示できます。</li>
+      <li>データはすべてこのブラウザ (localStorage) に自動保存されます。</li>
+      <li>ショートカット: <kbd>Alt+1〜5</kbd> タブ切替、エディタで <kbd>Ctrl+/</kbd> コメント切替、<kbd>Tab</kbd>/<kbd>Shift+Tab</kbd> 字下げ。</li>
+    </ul>
+    <div class="dlg-actions"><button value="ok" class="primary">閉じる</button></div>
+  </form>
+</dialog>
+
+<script src="js/util.js"></script>
+<script src="js/editor.js"></script>
+<script src="js/runner.js"></script>
+<script src="js/codetest.js"></script>
+<script src="js/memo.js"></script>
+<script src="js/table.js"></script>
+<script src="js/algo.js"></script>
+<script src="js/templates.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
